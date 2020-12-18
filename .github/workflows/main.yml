@@ -1,0 +1,48 @@
+name: Build executable
+
+on:
+  workflow_dispatch:
+
+jobs:
+  compile:
+    name: Compile AHK
+    runs-on: windows-2019
+    
+    steps:
+
+    - uses: actions/checkout@v2
+    
+    - uses: actions/checkout@v2
+      with:
+        repository: 'rumpelrausch/autohotkey-compiler'
+        token: ${{ secrets.PAT }}
+        ref: master
+        path: autohotkey-compiler
+    
+    - name: Build binary
+      shell: cmd
+      run: autohotkey-compiler\Ahk2Exe.exe /in DevKey.ahk /out DevKey.exe /icon keyboard-on.ico
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@latest
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          tag_name: Release-${{ github.sha }}
+          release_name: Release from OID ${{ github.sha }}
+          body: |
+            DevKey for Windows 8/8.1/10 64Bit
+          draft: false
+          prerelease: false
+    
+    - name: Upload Release Asset
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./DevKey.exe
+          asset_name: DevKey.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
