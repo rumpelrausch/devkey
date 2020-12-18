@@ -20,7 +20,7 @@ Once running and enabled, some easily reachable keys can be hold for a short tim
 | `w` | `}` |
 | `a` | `[` |
 | `s` | `]` |
-| `<` | `|` |
+| `<` | `\|` |
 
 *(That's the gaming keys; Your left hand knows where they are.)*
 
