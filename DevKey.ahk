@@ -4,7 +4,7 @@
 SendMode Input
 SetCapsLockState, alwaysoff
 
-oKeys := {"time": 0.15, "q":"{", "w":"}", "a":"[", "s":"]", "<":"|"}
+oKeys := {"time": 0.15, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
 time := oKeys.time
 
 FileInstall,keyboard-on.ico,keyboard-on.ico,0
@@ -34,7 +34,10 @@ $q::
 $w::
 $a::
 $s::
-$<::
+$y::
+$z::
+$x::
+$i::
   gosub handleKey
   Return
 
@@ -90,6 +93,11 @@ help:
     
     s	]
     
-    <	|
+    i	|
+
+    y	<
+    z	<
+
+    x	>
   )
   return
