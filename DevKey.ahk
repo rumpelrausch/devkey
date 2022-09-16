@@ -14,7 +14,7 @@ FileInstall,info-circle.ico,info-circle.ico,0
 
 Menu, tray, NoStandard
 Menu, Tray, Icon, keyboard-on.ico, 1, 1
-TrayTip, DevKey, DevKey wurde geladen.
+; TrayTip, DevKey, DevKey wurde geladen.
 Menu, tray, add, ON / OFF, toggle
 Menu, tray, default, ON / OFF
 Menu, tray, icon, ON / OFF, keyboard-off.ico
@@ -27,8 +27,12 @@ Menu, tray, icon, Exit, poweroff.ico
 
 return
 
++Del::Send {Ins}
+^Del::Send {Ins}
+
 *Capslock::
 return
+
 
 $q::
 $w::
