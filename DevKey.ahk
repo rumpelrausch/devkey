@@ -27,8 +27,9 @@ Menu, tray, icon, Exit, poweroff.ico
 
 return
 
-+Del::Send {Ins}
 ^Del::Send {Ins}
+PrintScreen::Send {Home}
+!PrintScreen::Send {PrintScreen}
 
 *Capslock::
 return
