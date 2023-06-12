@@ -4,8 +4,10 @@
 SendMode Input
 SetCapsLockState, alwaysoff
 
-oKeys := {"time": 0.15, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
+oKeys := {"time": 0.35, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
 time := oKeys.time
+holdKey := ""
+ignoreKey := ""
 
 FileInstall,keyboard-on.ico,keyboard-on.ico,0
 FileInstall,keyboard-off.ico,keyboard-off.ico,0
@@ -35,18 +37,40 @@ PrintScreen::Send {Home}
 return
 
 
-$q::
-$w::
 $a::
+$b::
+$c::
+$d::
+$e::
+$f::
+$g::
+$h::
+$i::
+$j::
+$k::
+$l::
+$m::
+$n::
+$o::
+$p::
+$q::
+$r::
 $s::
+$t::
+$u::
+$v::
+$w::
+$x::
 $y::
 $z::
-$x::
-$i::
+$ä::
+$ö::
+$ß::
   gosub handleKey
   Return
 
 handleKey:
+  global holdKey, ignoreKey
   StringReplace, key, A_ThisHotkey, $
   state := GetKeyState("RAlt")
   If ( (key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
@@ -55,13 +79,25 @@ handleKey:
   }
   else
   {
+    if (holdKey != "")
+    {
+      ignoreKey = key
+      send {%holdKey%}
+      return
+    }
     repl := oKeys[key]
     ; send {%key%}
     if repl
     {
+      holdKey := key
       KeyWait %key%, t%time%
+      holdKey := ""
       if errorlevel
       {
+        if (ignoreKey = key)
+        {
+          return
+        }
         send {Raw}%repl%
         KeyWait, %key%, U
       }
