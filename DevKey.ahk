@@ -4,7 +4,7 @@
 SendMode Input
 SetCapsLockState, alwaysoff
 
-oKeys := {"time": 0.35, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
+oKeys := {"time": 0.25, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
 time := oKeys.time
 holdKey := ""
 ignoreKey := ""
