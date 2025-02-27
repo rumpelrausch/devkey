@@ -23,7 +23,7 @@ jobs:
     
     - name: Build binary
       shell: cmd
-      run: autohotkey-compiler\Ahk2Exe.exe /in DevKey.ahk /out DevKey.exe /icon keyboard-on.ico
+      run: autohotkey-compiler\Ahk2Exe.exe /in DevKey.ahk /out DevKey.exe /icon keyboard-on.ico /silent /base autohotkey-compiler\AutoHotkey64.exe
 
     - name: Create Release
       id: create_release
