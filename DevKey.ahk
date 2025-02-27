@@ -1,40 +1,54 @@
-﻿#InstallKeybdHook
-#SingleInstance ignore
+﻿InstallKeybdHook()
+#SingleInstance force
 
-SendMode Input
-SetCapsLockState, alwaysoff
+SendMode("Input")
+SetCapsLockState("alwaysoff")
 
-oKeys := {"time": 0.25, "q":"{", "w":"}", "a":"[", "s":"]", "y":"<", "z":"<", "x":">", "i":"|"}
-time := oKeys.time
+keyMap := Map.Call(
+  "q", "{",
+  "w", "}",
+  "a", "[",
+  "s", "]",
+  "y", "<",
+  "z", "<",
+  "x", ">",
+  "i", "|"
+)
+holdTime := 0.2
 holdKey := ""
 ignoreKey := ""
 
-FileInstall,keyboard-on.ico,keyboard-on.ico,0
-FileInstall,keyboard-off.ico,keyboard-off.ico,0
-FileInstall,poweroff.ico,poweroff.ico,0
-FileInstall,info-circle.ico,info-circle.ico,0
+FileInstall("keyboard-on.ico", "keyboard-on.ico", 0)
+FileInstall("keyboard-off.ico", "keyboard-off.ico", 0)
+FileInstall("poweroff.ico", "poweroff.ico", 0)
+FileInstall("info-circle.ico", "info-circle.ico", 0)
 
-Menu, tray, NoStandard
-Menu, Tray, Icon, keyboard-on.ico, 1, 1
+tray := A_TrayMenu
+tray.Delete()
+TraySetIcon("keyboard-on.ico", "1", "1")
 ; TrayTip, DevKey, DevKey wurde geladen.
-Menu, tray, add, ON / OFF, toggle
-Menu, tray, default, ON / OFF
-Menu, tray, icon, ON / OFF, keyboard-off.ico
-Menu, tray, click, toggle
-Menu, tray, add, WTF?, help
-Menu, tray, icon, WTF?, info-circle.ico
-Menu, tray, add
-Menu, tray, add, Exit, bailout
-Menu, tray, icon, Exit, poweroff.ico
+tray.add("ON / OFF", toggle)
+tray.Default := "ON / OFF"
+tray.SetIcon("ON / OFF", "keyboard-off.ico")
+tray.add("WTF?", help)
+tray.SetIcon("WTF?", "info-circle.ico")
+tray.add()
+tray.add("Exit", bailout)
+tray.SetIcon("Exit", "poweroff.ico")
+tray.Default := "ON / OFF"
+tray.clickCount := 1
 
 return
 
-^Del::Send {Ins}
-PrintScreen::Send ^{Home}
-!PrintScreen::Send {PrintScreen}
+^Del:: Send("{Ins}")
+PrintScreen:: Send("^{Home}")
+!PrintScreen:: Send("{PrintScreen}")
 
 *Capslock::
-return
+{
+  global
+  return
+}
 
 
 $a::
@@ -66,31 +80,36 @@ $z::
 $ä::
 $ö::
 $ß::
-  gosub handleKey
+{
+  global
+  handleKey()
   Return
+}
 
-handleKey:
+handleKey()
+{
+  global
   global holdKey, ignoreKey
-  StringReplace, key, A_ThisHotkey, $
+  key := StrReplace(A_ThisHotkey, "$", , , , 1)
   state := GetKeyState("RAlt")
-  If ( (key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
+  If ((key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
   {
-   Send,@
+    Send("@")
   }
   else
   {
     if (holdKey != "")
     {
-      ignoreKey = key
-      send {%holdKey%}
+      ignoreKey := "key"
+      Send("{" holdKey "}")
       return
     }
-    repl := oKeys[key]
     ; send {%key%}
-    if repl
+    if keyMap.Has(key)
     {
+      replacementKey := keyMap[key]
       holdKey := key
-      KeyWait %key%, t%time%
+      ErrorLevel := !KeyWait(key, "t" holdTime)
       holdKey := ""
       if errorlevel
       {
@@ -98,39 +117,48 @@ handleKey:
         {
           return
         }
-        send {Raw}%repl%
-        KeyWait, %key%, U
+        Send("{Raw}" replacementKey)
+        ErrorLevel := !KeyWait(key, "U")
       }
       else
       {
-        send {%key%}
+        Send("{" key "}")
       }
       return
     }
-    send {%key%}
+    Send("{" key "}")
   }
   return
+}
 
-toggle:
-  Suspend
-  if A_IsSuspended = 1
+toggle(A_ThisMenuItem := "", A_ThisMenuItemPos := "", MyMenu := "", *)
+{
+  global
+  Suspend()
+  if (A_IsSuspended = 1)
   {
-    Menu, Tray, Icon, keyboard-off.ico, 1, 1
-    Menu, Tray, Tip, DevKey - OFF
+    TraySetIcon("keyboard-off.ico", "1", "1")
+    A_IconTip := "DevKey - OFF"
   }
   else
   {
-    Menu, Tray, Icon, keyboard-on.ico, 1, 1
-    Menu, Tray, Tip, DevKey - ON
+    TraySetIcon("keyboard-on.ico", "1", "1")
+    A_IconTip := "DevKey - ON"
   }
   return
+}
 
-bailout:
-  exitApp
+bailout(A_ThisMenuItem := "", A_ThisMenuItemPos := "", MyMenu := "", *)
+{
+  global
+  ExitApp()
   return
+}
 
-help:
-  msgbox,64,DevKey - You would miss it.,
+help(A_ThisMenuItem := "", A_ThisMenuItemPos := "", MyMenu := "", *)
+{
+  global
+  MsgBox("
   (
   Hold those keys to trigger special characters:
 
@@ -148,5 +176,6 @@ help:
     z	<
 
     x	>
-  )
+  )", "DevKey - You would miss it.", 64)
   return
+}
