@@ -90,21 +90,21 @@ handleKey()
 {
   global
   global holdKey, ignoreKey
+  Thread "Priority", 1000
   key := StrReplace(A_ThisHotkey, "$", , , , 1)
   state := GetKeyState("RAlt")
   If ((key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
   {
-    Send("@")
+    SendInput("@")
   }
   else
   {
     if (holdKey != "")
     {
       ignoreKey := "key"
-      Send("{" holdKey "}")
+      SendInput("{" holdKey "}")
       return
     }
-    ; send {%key%}
     if keyMap.Has(key)
     {
       replacementKey := keyMap[key]
@@ -117,16 +117,16 @@ handleKey()
         {
           return
         }
-        Send("{Raw}" replacementKey)
+        SendInput("{Raw}" replacementKey)
         ErrorLevel := !KeyWait(key, "U")
       }
       else
       {
-        Send("{" key "}")
+        SendInput("{" key "}")
       }
       return
     }
-    Send("{" key "}")
+    SendInput("{" key "}")
   }
   return
 }
