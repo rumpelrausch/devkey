@@ -18,10 +18,10 @@ holdTime := 0.2
 holdKey := ""
 ignoreKey := ""
 
-FileInstall("keyboard-on.ico", "keyboard-on.ico", 0)
-FileInstall("keyboard-off.ico", "keyboard-off.ico", 0)
-FileInstall("poweroff.ico", "poweroff.ico", 0)
-FileInstall("info-circle.ico", "info-circle.ico", 0)
+FileInstall("keyboard-on.ico", "keyboard-on.ico", 1)
+FileInstall("keyboard-off.ico", "keyboard-off.ico", 1)
+FileInstall("poweroff.ico", "poweroff.ico", 1)
+FileInstall("info-circle.ico", "info-circle.ico", 1)
 
 tray := A_TrayMenu
 tray.Delete()
