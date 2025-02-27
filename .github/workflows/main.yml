@@ -17,7 +17,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         repository: 'rumpelrausch/autohotkey-compiler-v2'
-        token: ${{ secrets.PAT_autohotkey_compiler_v2 }}
+        token: ${{ secrets.PAT_AUTOHOTKEY_COMPILER_V2 }}
         path: autohotkey-compiler
         persist-credentials: false
     
