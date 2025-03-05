@@ -100,7 +100,6 @@ handleKey()
   {
     if (holdKey != "")
     {
-      OutputDebug("DBG-1 key=" . key . " holdKey=" . holdKey . " repl=" . replacementKey)
       send("{" holdKey "}")
       if(holdKey != key)
       {
