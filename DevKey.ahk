@@ -90,7 +90,6 @@ handleKey()
 {
   global
   global holdKey
-  Thread "Priority", 1000
   key := StrReplace(A_ThisHotkey, "$", , , , 1)
   state := GetKeyState("RAlt")
   If ((key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
@@ -101,9 +100,11 @@ handleKey()
   {
     if (holdKey != "")
     {
+      OutputDebug("DBG-1 key=" . key . " holdKey=" . holdKey . " repl=" . replacementKey)
       send("{" holdKey "}")
       if(holdKey != key)
       {
+        replacementKey := key
         holdKey := ""
       }
      return
