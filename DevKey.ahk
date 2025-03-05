@@ -14,7 +14,7 @@ keyMap := Map.Call(
   "x", ">",
   "i", "|"
 )
-holdTime := 0.2
+holdTime := 0.25
 holdKey := ""
 ignoreKey := ""
 
@@ -89,21 +89,24 @@ $ß::
 handleKey()
 {
   global
-  global holdKey, ignoreKey
+  global holdKey
   Thread "Priority", 1000
   key := StrReplace(A_ThisHotkey, "$", , , , 1)
   state := GetKeyState("RAlt")
   If ((key = "q") AND (GetKeyState("RAlt") = 1) OR (GetKeyState("LAlt") = 1) OR (GetKeyState("RWin") = 1) OR (GetKeyState("LWin") = 1))
   {
-    SendInput("@")
+    send("@")
   }
   else
   {
     if (holdKey != "")
     {
-      ignoreKey := "key"
-      SendInput("{" holdKey "}")
-      return
+      send("{" holdKey "}")
+      if(holdKey != key)
+      {
+        holdKey := ""
+      }
+     return
     }
     if keyMap.Has(key)
     {
@@ -111,22 +114,18 @@ handleKey()
       holdKey := key
       ErrorLevel := !KeyWait(key, "t" holdTime)
       holdKey := ""
-      if errorlevel
+      if ErrorLevel
       {
-        if (ignoreKey = key)
-        {
-          return
-        }
-        SendInput("{Raw}" replacementKey)
+        send("{Raw}" replacementKey)
         ErrorLevel := !KeyWait(key, "U")
       }
       else
       {
-        SendInput("{" key "}")
+        send("{" key "}")
       }
       return
     }
-    SendInput("{" key "}")
+    send("{" key "}")
   }
   return
 }
