@@ -1,6 +1,54 @@
 ﻿InstallKeybdHook()
 #SingleInstance force
 
+class Debounce {
+	__New(key, releasetime := 33.3, holdtime := 33.3) {
+		this.key := key
+		this.keydown_action := "{" key " down}"
+		this.keyup_action := "{" key " up}"
+		this.releasetime := releasetime  ; minimum key released time
+		this.holdtime := holdtime  ; minimum key hold time
+		this.timeup := -1  ; time of last key up was sent
+		this.timedown := -1  ; time of last key down was sent
+		
+		; requires Bind(), otherwise this = Hotkeyname in the function
+		Hotkey(this.key      , this.down.Bind(this))
+		Hotkey(this.key " Up", this.up.Bind(this))
+	}
+	
+	down(*) {
+		if((time() - this.timeup) > this.releasetime || this.timeup = -1) {
+			; cooldown has elapsed
+			if(!GetKeyState(this.key))  ; key released, reset timer
+				this.timedown := time()
+			SendInput this.keydown_action
+		}
+	}
+	
+	up(*) {
+		if((time() - this.timedown) > this.holdtime || this.timedown = -1) {
+			; cooldown has elapsed
+			if(GetKeyState(this.key))  ; key held, reset timer
+				this.timeup := time()
+			SendInput this.keyup_action
+		}
+	}
+}
+
+; calculate time interval using Windows high resolution timestamps
+DllCall("QueryPerformanceFrequency", "Int64*", &frequency := 0) ; get timer frequency. usually microsecond resolution
+time() {
+	; returns time in miliseconds
+	; A_TickCount only gives 10ms resolution up to ~50 days, so we use QueryPerformanceCounter instead https://www.autohotkey.com/docs/v2/lib/DllCall.htm#ExQPC
+	; QueryPerformanceCounter should not overflow for 100 years, so we don't need to worry about that
+	; https://stackoverflow.com/a/70987823/823633
+	;  https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps#general-faq-about-qpc-and-tsc
+	DllCall("QueryPerformanceCounter", "Int64*", &counter := 0)
+	return counter / frequency * 1000
+}
+
+Debounce("MButton", 100, 30)
+
 SendMode("Input")
 SetCapsLockState("alwaysoff")
 
@@ -49,6 +97,16 @@ PrintScreen:: Send("^{Home}")
   global
   return
 }
+
+; MButton UP::
+; {
+;   If (A_ThisHotkey = A_PriorHotkey) && (A_TimeSincePriorHotkey < 10)
+;   {
+;     return
+;   }
+;   ; Click("Middle")
+;   Click("Up Middle")
+; }
 
 
 $a::
